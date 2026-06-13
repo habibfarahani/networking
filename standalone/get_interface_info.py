@@ -31,6 +31,22 @@ def get_mac_address(ifname: str) -> str | None:
     except OSError:
         return None
 
+def get_network_interfaces():
+    interfaces = []
+
+    for iface_path in Path("/sys/class/net").iterdir():
+        name = iface_path.name
+
+        if name == "lo":
+            continue
+
+        if name.startswith("docker"):
+            continue
+
+        interfaces.append(name)
+
+    return interfaces
+
 def main() -> None:
     parser = argparse.ArgumentParser(description='Get IP and MAC of interface')
     parser.add_argument('interface', help='interface name, e.g. eth0')
