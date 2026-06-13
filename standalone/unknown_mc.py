@@ -1,4 +1,5 @@
 # python
+import os
 import socket, struct, fcntl, random, time, sys
 
 SIOCGIFHWADDR = 0x8927

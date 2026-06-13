@@ -9,10 +9,12 @@ Run with administrative privileges on Linux:
     python standalone/arp_sender.py reply --interface eth0 --sender-ip 192.0.2.10 --target-ip 192.0.2.20 --target-mac aa:bb:cc:dd:ee:ff
 
 
-while [ 1 ]; do sudo python3 standalone/arp-sender.py request -i eth1 --sender-mac 9c:69:d3:39:f5:c4 --target-ip 192.168.168.101 --sender-ip 192.168.168.21; done
-while [ 1 ]; do sudo python3 standalone/arp-sender.py request -i eth2 --sender-mac 9c:69:d3:39:f3:10 --target-ip 192.168.168.101 --sender-ip 192.168.168.22; done
-while [ 1 ]; do sudo python3 standalone/arp-sender.py request -i eth3 --sender-mac 9c:69:d3:39:e4:4d  --target-ip 192.168.168.101 --sender-ip 192.168.168.23; done
-while [ 1 ]; do sudo python3 standalone/arp-sender.py request -i eth4 --sender-mac 9c:69:d3:39:f3:0c --target-ip 192.168.168.101 --sender-ip 192.168.168.24; done
+
+while [ 1 ]; do sudo python3 arp-sender.py request -i eth0 --target-ip 192.168.168.101 -c 10 ; done
+while [ 1 ]; do sudo python3 arp-sender.py request -i eth1 --target-ip 192.168.168.101 -c 10 ; done
+while [ 1 ]; do sudo python3 arp-sender.py request -i eth2 --target-ip 192.168.168.101 -c 10 ; done
+while [ 1 ]; do sudo python3 arp-sender.py request -i eth3 --target-ip 192.168.168.101 -c 10 ; done
+while [ 1 ]; do sudo python3 arp-sender.py request -i eth4 --target-ip 192.168.168.101 -c 10 ; done
 Use this on networks you own or have permission to test.
 """
 
@@ -24,6 +26,8 @@ import struct
 import sys
 import time
 from dataclasses import dataclass
+from get_interface_info import get_mac_address, get_ip_address
+
 
 
 ETHERTYPE_ARP = 0x0806
@@ -120,42 +124,47 @@ def send_repeated(interface: str, packet: bytes, count: int, interval: float) ->
 
 
 def build_request(args: argparse.Namespace) -> ArpFrame:
-    sender_mac = args.sender_mac or get_interface_mac(args.interface)
+    sender_mac = args.sender_mac or bytearray.fromhex(get_mac_address(args.interface).replace(":", ""))
+    sender_ip = get_ip_address(args.interface)
     return ArpFrame(
         dst_mac=BROADCAST_MAC,
         src_mac=sender_mac,
         opcode=ARP_REQUEST,
         sender_mac=sender_mac,
-        sender_ip=args.sender_ip,
+        sender_ip=sender_ip,
         target_mac=ZERO_MAC,
         target_ip=args.target_ip,
     )
 
 
 def build_reply(args: argparse.Namespace) -> ArpFrame:
-    sender_mac = args.sender_mac or get_interface_mac(args.interface)
+    sender_mac = args.sender_mac or bytearray.fromhex(get_mac_address(args.interface).replace(":", ""))
     dst_mac = args.ethernet_dst or args.target_mac
+    sender_ip = get_ip_address(args.interface)
+
     return ArpFrame(
         dst_mac=dst_mac,
         src_mac=sender_mac,
         opcode=ARP_REPLY,
         sender_mac=sender_mac,
-        sender_ip=args.sender_ip,
+        sender_ip=sender_ip,
         target_mac=args.target_mac,
         target_ip=args.target_ip,
     )
 
 
 def build_gratuitous(args: argparse.Namespace) -> ArpFrame:
-    sender_mac = args.sender_mac or get_interface_mac(args.interface)
+    sender_mac = args.sender_mac or bytearray.fromhex(get_mac_address(args.interface).replace(":", ""))
     opcode = ARP_REPLY if args.reply else ARP_REQUEST
     target_mac = sender_mac if args.reply else ZERO_MAC
+    sender_ip = get_ip_address(args.interface)
+
     return ArpFrame(
         dst_mac=BROADCAST_MAC,
         src_mac=sender_mac,
         opcode=opcode,
         sender_mac=sender_mac,
-        sender_ip=args.sender_ip,
+        sender_ip=sender_ip,
         target_mac=target_mac,
         target_ip=args.sender_ip,
     )
@@ -173,9 +182,9 @@ def describe(frame: ArpFrame, count: int) -> str:
 def add_common_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("-i", "--interface", required=True, help="interface to send from, e.g. eth0")
     parser.add_argument("--sender-mac", type=parse_mac, help="source MAC; defaults to interface MAC on Linux")
-    parser.add_argument("--sender-ip", type=parse_ip, required=True, help="sender IPv4 address in the ARP payload")
+    parser.add_argument("--sender-ip", type=parse_ip, help="sender IPv4 address in the ARP payload")
     parser.add_argument("-c", "--count", type=int, default=1, help="number of packets to send")
-    parser.add_argument("--interval", type=float, default=1.0, help="seconds between packets when count is greater than 1")
+    parser.add_argument("--interval", type=float, default=0.1, help="seconds between packets when count is greater than 1")
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:

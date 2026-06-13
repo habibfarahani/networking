@@ -87,14 +87,14 @@ def mdns_query_on_interface(iface: str, query_name: str, timeout: float = 2.0):
         sock.sendto(packet, (MDNS_ADDR, MDNS_PORT))
 
         responses = []
-        deadline = time.time() + timeout
+        # deadline = time.time() + timeout
 
-        while time.time() < deadline:
-            try:
-                data, addr = sock.recvfrom(4096)
-                responses.append((addr, data))
-            except socket.timeout:
-                break
+        # while time.time() < deadline:
+        #     try:
+        #         data, addr = sock.recvfrom(4096)
+        #         responses.append((addr, data))
+        #     except socket.timeout:
+        #         break
 
         return responses
     finally:
