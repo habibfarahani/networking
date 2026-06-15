@@ -46,7 +46,7 @@ start_ping_flood()
 
 }
 
-while [ 1 ] do
+while [ 1 ]; do
 
     for target in $ip_list; do
         echo "Deploying to: [$target]"
