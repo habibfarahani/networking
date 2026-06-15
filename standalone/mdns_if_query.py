@@ -136,6 +136,7 @@ if __name__ == "__main__":
     p.add_argument("--timeout", type=float, default=3.0)
     args = p.parse_args()
 
+    print(args)
     mdns_query(args.iface, args.name, args.qtype, args.timeout)
 
 
@@ -144,9 +145,9 @@ Examples:
 
 bash
 
-python3 mdns_query.py eth0 _services._dns-sd._udp.local --qtype PTR
-python3 mdns_query.py eth0 _http._tcp.local --qtype PTR
-python3 mdns_query.py eth0 my-device.local --qtype A
+python3 mdns_if_query.py eth0 _services._dns-sd._udp.local --qtype PTR
+python3 mdns_if_query.py eth0 _http._tcp.local --qtype PTR
+python3 mdns_if_query.py eth0 my-device.local --qtype A
 If port 5353 is already exclusively held by an mDNS daemon, run with sufficient privileges or stop that daemon while testing.
 
 
