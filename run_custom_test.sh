@@ -46,18 +46,19 @@ start_ping_flood()
 
 }
 
+while [ 1 ] do
 
+    for target in $ip_list; do
+        echo "Deploying to: [$target]"
+        python3 standalone/arp-sender.py request -i "$IF" --target-ip "$target" -c 10
+        start_ping_flood "$target" "$IF" "3333"  "100"
+        python3 standalone/mdns_if_query.py $IF _services._dns-sd._udp.local   --qtype TXT --timeout 10
+        python3 standalone/mdns_if_query.py $IF _services._dns-sd._udp.local   --qtype PTR --timeout 10
+        python3 standalone/mdns_if_query.py $IF _services._dns-sd._udp.local   --qtype AAAA --timeout 10
 
-for target in $ip_list; do
-    echo "Deploying to: [$target]"
-    python3 standalone/arp-sender.py request -i "$IF" --target-ip "$target" -c 10
-    start_ping_flood "$target" "$IF" "3333"  "100"
-    python3 standalone/mdns_if_query.py $IF _services._dns-sd._udp.local   --qtype TXT --timeout 10
-    python3 standalone/mdns_if_query.py $IF _services._dns-sd._udp.local   --qtype PTR --timeout 10
-    python3 standalone/mdns_if_query.py $IF _services._dns-sd._udp.local   --qtype AAAA --timeout 10
+    done 
 
-done 
-
+done
 # start_ping_flood "192.168.168.101" $IF 3333 50
 # start_ping_flood "192.168.168.151" $IF 3333 50
 # start_ping_flood "192.168.168.101" $IF 3333 50
