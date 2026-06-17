@@ -78,3 +78,18 @@ def main(argv: Sequence[str]) -> int:
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
+
+
+# ./scripts/random_mac.py
+# ./scripts/random_mac.py -n 10
+# ./scripts/random_mac.py -n 5 --prefix 02:42
+# ./scripts/random_mac.py --separator - --uppercase
+# By default it generates locally administered, unicast MAC addresses using secrets, not predictable random.
+
+# Verified:
+
+# bash
+
+# python3 -m py_compile scripts/random_mac.py scripts/tests/test_random_mac.py
+# python3 scripts/tests/test_random_mac.py
+# python3 scripts/random_mac.py -n 3 --prefix 02:42
