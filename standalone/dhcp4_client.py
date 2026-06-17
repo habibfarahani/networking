@@ -855,3 +855,15 @@ def main(argv: Sequence[str]) -> int:
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
+# sudo ./scripts/dhcp4_client.py -i ens1f0
+# sudo ./scripts/dhcp4_client.py -i ens1f0 --discover-only
+# sudo ./scripts/dhcp4_client.py -i ens1f0 --json --timeout 3
+# It binds a Linux raw socket to the exact -i/--interface, sends DHCPDISCOVER, optionally sends DHCPREQUEST after an offer, and prints the response. It does not configure the interface or install a lease.
+
+# Verified:
+
+# bash
+
+# python3 -m py_compile scripts/dhcp4_client.py scripts/tests/test_dhcp4_client.py
+# python3 scripts/tests/test_dhcp4_client.py
+# python3 scripts/dhcp4_client.py --help
