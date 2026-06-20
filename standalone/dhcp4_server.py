@@ -913,6 +913,9 @@ if __name__ == "__main__":
 #   --subnet-mask 255.255.255.0 \
 #   --router 192.0.2.1 \
 #   --dns 192.0.2.53
+
+#sudo python3 standalone/dhcp4_server.py -i enp1s0 --server-ip 192.0.2.1 --pool-start 192.0.2.10 --pool-end 192.0.2.50 --subnet-mask 255.255.255.0 --router 192.0.2.1 --dns 192.0.2.53
+
 # It binds a Linux raw socket to the specified -i/--interface, handles DHCPDISCOVER -> DHCPOFFER and DHCPREQUEST -> DHCPACK/DHCPNAK, keeps leases in memory, and does not configure the host interface.
 
 # Verified:
