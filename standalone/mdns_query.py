@@ -338,15 +338,15 @@ def main(argv: list[str]) -> int:
     try:
         with make_socket(args.source_ip, args.timeout) as sock:
             sock.sendto(query, (MDNS_IPV4, MDNS_PORT))
-            while time.monotonic() < deadline and (args.count == 0 or seen < args.count):
-                remaining = max(0.0, deadline - time.monotonic())
-                sock.settimeout(remaining)
-                try:
-                    data, addr = sock.recvfrom(9000)
-                except socket.timeout:
-                    break
-                if print_message(data, addr, args.answers_only):
-                    seen += 1
+            # while time.monotonic() < deadline and (args.count == 0 or seen < args.count):
+            #     remaining = max(0.0, deadline - time.monotonic())
+            #     sock.settimeout(remaining)
+            #     try:
+            #         data, addr = sock.recvfrom(9000)
+            #     except socket.timeout:
+            #         break
+            #     if print_message(data, addr, args.answers_only):
+            #         seen += 1
     except OSError as exc:
         print(f"mdns_query: {exc}", file=sys.stderr)
         return 1

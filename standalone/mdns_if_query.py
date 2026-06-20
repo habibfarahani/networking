@@ -118,14 +118,14 @@ def mdns_query(iface: str, name: str, qtype: str, timeout: float):
     sock.sendto(build_query(name, qtype), (MDNS_ADDR, MDNS_PORT))
 
     deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        ready, _, _ = select.select([sock], [], [], deadline - time.monotonic())
-        if not ready:
-            break
+    # while time.monotonic() < deadline:
+    #     ready, _, _ = select.select([sock], [], [], deadline - time.monotonic())
+    #     if not ready:
+    #         break
 
-        pkt, src = sock.recvfrom(9000)
-        for rec_name, rec_type, ttl, value in parse_answers(pkt):
-            print(f"{src[0]} ttl={ttl} {rec_name} {rec_type} {value}")
+    #     pkt, src = sock.recvfrom(9000)
+    #     for rec_name, rec_type, ttl, value in parse_answers(pkt):
+    #         print(f"{src[0]} ttl={ttl} {rec_name} {rec_type} {value}")
 
 
 if __name__ == "__main__":
