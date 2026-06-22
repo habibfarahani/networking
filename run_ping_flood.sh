@@ -1,6 +1,8 @@
 #!/bin/sh
 
 
+. ./ip_list.sh
+
 
 start_ping_flood()
 {
@@ -8,11 +10,20 @@ start_ping_flood()
     iface=$2
     size=$3
 
-    ping -f -s $size -I $iface $addr 
+    echo "Pinging $addr from $if with size $size"
+
+    ping -f -s $size -I $iface $addr &
 
 }
 
+IF=$1
+SIZE=$2
 
 
-start_ping_flood "192.168.168.101" "eth0" 3333
+
+#while [ 1 ]; do
+    for target in $ip_list; do
+        start_ping_flood $target $IF $SIZE
+    done
+#done
 
